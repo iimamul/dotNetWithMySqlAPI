@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using dotNetWithMySqlAPI.Entities;
 using dotNetWithMySqlAPI.DTO;
+using AutoMapper;
 
 namespace dotNetWithMySqlAPI.Controllers
 {
@@ -15,27 +16,20 @@ namespace dotNetWithMySqlAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly dotnetapiContext _context;
+        private readonly IMapper _mapper;
 
-        public UsersController(dotnetapiContext context)
+        public UsersController(dotnetapiContext context, IMapper mapper )
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
         {
-            var users=await _context.Users
-                .Select(s=>new UserDTO
-                {
-                    Id = s.Id,
-                    FirstName = s.FirstName,
-                    LastName = s.LastName,
-                    EnrollmentDate= s.EnrollmentDate
-                })
-                .ToListAsync();
-
-            return users;
+            var users = await _context.Users.ToListAsync();
+            return _mapper.Map<List<User>,List<UserDTO>>(users);
         }
 
         // GET: api/Users/5
