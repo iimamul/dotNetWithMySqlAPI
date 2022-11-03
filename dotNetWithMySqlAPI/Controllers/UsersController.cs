@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using dotNetWithMySqlAPI.Entities;
+using dotNetWithMySqlAPI.DTO;
 
 namespace dotNetWithMySqlAPI.Controllers
 {
@@ -22,9 +23,19 @@ namespace dotNetWithMySqlAPI.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users=await _context.Users
+                .Select(s=>new UserDTO
+                {
+                    Id = s.Id,
+                    FirstName = s.FirstName,
+                    LastName = s.LastName,
+                    EnrollmentDate= s.EnrollmentDate
+                })
+                .ToListAsync();
+
+            return users;
         }
 
         // GET: api/Users/5
